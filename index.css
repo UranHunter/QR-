@@ -1,0 +1,382 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    background-color: #f4f4f9;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding-top: 20px;
+    box-sizing: border-box;
+}
+
+#app-container {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 480px; /* Simulates mobile width */
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#app-header {
+    background-color: #007bff;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#app-header h1 {
+    margin: 0;
+    font-size: 1.2em; /* Slightly reduced for more space for buttons */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#admin-controls button.header-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5em; /* Icon size */
+    cursor: pointer;
+    margin-left: 8px; /* Spacing between icons */
+    padding: 5px;
+}
+#admin-controls button.header-btn:hover {
+    opacity: 0.8;
+}
+
+
+#main-content {
+    padding: 20px;
+    flex-grow: 1;
+}
+
+.view {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+h2, h3, h4 {
+    color: #007bff;
+    margin-top: 0;
+}
+#unifiedLoginView h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+#unifiedLoginView p {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+
+form div {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #555;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="tel"] {
+    width: calc(100% - 22px); /* Account for padding and border */
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1em;
+}
+
+input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.primary-button, button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.2s ease;
+    display: inline-block;
+    text-align: center;
+    margin-top: 5px; /* Add some space above buttons */
+}
+
+.primary-button:hover, button:hover {
+    background-color: #0056b3;
+}
+
+.primary-button:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+}
+
+.full-width-button {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.secondary-button {
+    background-color: #6c757d; /* Bootstrap secondary color */
+    margin-top: 10px; /* Consistent margin */
+}
+.secondary-button:hover {
+    background-color: #5a6268;
+}
+
+.danger-button {
+    background-color: #dc3545;
+    margin-top: 10px; /* Consistent margin */
+}
+.danger-button:hover {
+    background-color: #c82333;
+}
+
+.small-button {
+    padding: 6px 10px;
+    font-size: 0.85em;
+    margin-top: 5px !important; /* Override general button margin if needed */
+}
+
+
+.error-message {
+    color: #dc3545;
+    font-size: 0.9em;
+    margin-top: 10px;
+}
+
+.success-message {
+    color: #28a745;
+    font-size: 0.9em;
+    margin-top: 10px;
+}
+.info-message {
+    color: #17a2b8; /* Bootstrap info color */
+    background-color: #e2f3f5;
+    border: 1px solid #bEE5EB;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* QR Code Styling */
+.qr-code-container { /* For admin list */
+    margin: 5px 0; /* Align with client actions buttons */
+    padding: 5px;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    display: inline-block; 
+    background-color: #fff;
+    align-self: center; /* Center QR if actions wrap below */
+}
+
+.qr-code-container-client { /* For client view */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px auto; /* Reduced top margin */
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background-color: #fff;
+    width: fit-content; 
+}
+
+#qrCodeContainerClient img {
+    max-width: 100%;
+    height: auto;
+    display: block; 
+}
+
+
+#clientQrView {
+    text-align: center;
+}
+#clientQrView h2 { /* Client Name Display */
+    margin-bottom: 5px;
+}
+#clientQrView > p { /* "Покажите сотруднику..." */
+    font-size: 1.1em;
+    color: #555;
+    margin-bottom: 15px;
+}
+
+
+/* Modal Styles */
+.modal {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex; /* Changed from none to flex by default, controlled by JS */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeInModalBackground 0.3s ease-out;
+}
+
+@keyframes fadeInModalBackground {
+    from { background-color: rgba(0,0,0,0); }
+    to { background-color: rgba(0,0,0,0.5); }
+}
+
+.modal-content {
+    background-color: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 450px;
+    position: relative;
+    animation: slideInModalContent 0.3s ease-out;
+}
+
+@keyframes slideInModalContent {
+    from { transform: translateY(-30px) scale(0.95); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #aaa;
+    cursor: pointer;
+    line-height: 1;
+}
+.close-button:hover, .close-button:focus {
+    color: #333;
+}
+
+#clientList {
+    list-style: none;
+    padding: 0;
+}
+
+#clientList li {
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: row; 
+    justify-content: space-between; 
+    align-items: flex-start; /* Align items to the top */
+    gap: 10px;
+    flex-wrap: wrap; 
+}
+#clientList li .client-info {
+    flex-grow: 1; 
+    min-width: 180px; /* Ensure info has some base width */
+    font-size: 0.9em; /* Slightly smaller text in list */
+}
+#clientList li .client-info strong {
+    font-weight: 600;
+}
+#clientList li .client-info small {
+    font-size: 0.85em;
+    color: #555;
+}
+
+#clientList li .qr-code-container {
+    flex-shrink: 0; 
+    margin-top: 0; /* Reset margin if any */
+}
+#clientList li .client-actions {
+    flex-shrink: 0; 
+    display: flex;
+    flex-direction: column; 
+    gap: 8px; /* Space between buttons */
+    align-items: stretch; /* Make buttons same width in column */
+    min-width: 120px; /* Ensure buttons have enough space */
+}
+#clientList li .client-actions button {
+    width: 100%; /* Make buttons full width of their container */
+    margin-left: 0; 
+}
+
+#clientList li .qr-code-container canvas,
+#clientList li .qr-code-container img {
+    display: block; 
+    margin-top: 0; 
+}
+
+/* Spinner */
+.spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 2000; 
+}
+
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border-left-color: #007bff;
+    animation: spin 1s ease infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Client password change specific view */
+#changeClientPasswordView {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+#changeClientPasswordView h4 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    text-align: center;
+}
+```

@@ -1,0 +1,188 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR для iiko-клиентов</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📱</text></svg>">
+<script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://esm.sh/@google/genai@^1.4.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body>
+    <div id="app-container">
+        <header id="app-header" style="display: none;">
+            <h1 id="header-title">Панель администратора</h1>
+            <div id="admin-controls">
+                 <button id="goToAdminPanelBtn" class="header-btn" title="Панель администратора" style="display: none;" aria-label="Панель администратора">📋</button>
+                 <button id="goToAdminSettingsBtn" class="header-btn" title="Настройки админа" style="display: none;" aria-label="Настройки">⚙️</button>
+                 <button id="goToUnifiedLoginBtn" class="header-btn" title="На главный экран" style="display: none;" aria-label="На главный экран">🏠</button>
+                 <button id="clientSettingsBtn" class="header-btn" title="Настройки аккаунта" style="display: none;" aria-label="Настройки аккаунта">👤</button>
+                 <button id="logoutBtn" class="header-btn" title="Выйти" style="display: none;" aria-label="Выйти">🚪</button>
+            </div>
+        </header>
+
+        <main id="main-content">
+            <div id="loading-spinner" class="spinner-container" style="display: none;">
+                <div class="spinner"></div>
+            </div>
+
+            <section id="unifiedLoginView" class="view">
+                <h2>Добро пожаловать!</h2>
+                <p>Выберите способ входа:</p>
+                <button id="showAdminLoginBtn" class="primary-button full-width-button">Войти как администратор</button>
+                <button id="showClientLoginBtn" class="primary-button full-width-button">Войти как клиент</button>
+            </section>
+
+            <section id="adminLoginView" class="view" style="display: none;">
+                <h2>Вход для администратора</h2>
+                <form id="adminLoginForm">
+                    <div>
+                        <label for="adminPassword">Пароль:</label>
+                        <input type="password" id="adminPassword" name="adminPassword" value="1" required aria-label="Пароль администратора">
+                    </div>
+                    <button type="submit" class="primary-button">Войти</button>
+                    <p id="adminLoginError" class="error-message" aria-live="assertive"></p>
+                    <button type="button" id="backToUnifiedLoginFromAdminBtn" class="secondary-button">Назад</button>
+                </form>
+            </section>
+
+            <section id="clientLoginView" class="view" style="display: none;">
+                <h2>Вход для клиента</h2>
+                <form id="clientLoginForm">
+                    <div>
+                        <label for="clientLoginIdInput">Номер телефона (формат +7XXXXXXXXXX):</label>
+                        <input type="text" id="clientLoginIdInput" name="clientLoginIdInput" placeholder="+79123456789" required aria-label="Номер телефона для входа (формат +7XXXXXXXXXX)">
+                    </div>
+                    <div>
+                        <label for="clientLoginPasswordInput">Пароль:</label>
+                        <input type="password" id="clientLoginPasswordInput" name="clientLoginPasswordInput" required aria-label="Пароль клиента">
+                    </div>
+                    <button type="submit" class="primary-button">Войти</button>
+                    <p id="clientLoginError" class="error-message" aria-live="assertive"></p>
+                     <button type="button" id="backToUnifiedLoginFromClientBtn" class="secondary-button">Назад</button>
+                </form>
+            </section>
+
+            <section id="adminPanelView" class="view" style="display: none;">
+                 <button id="addClientBtn" class="primary-button">Добавить клиента</button>
+                 <div id="clientListContainer">
+                    <h3>Список клиентов</h3>
+                    <ul id="clientList"></ul>
+                 </div>
+
+                 <div id="addClientModal" class="modal" style="display:none;"  aria-modal="true" role="dialog" aria-labelledby="addClientModalTitle">
+                    <div class="modal-content">
+                        <span class="close-button" id="closeAddClientModalBtn" role="button" tabindex="0" aria-label="Закрыть">&times;</span>
+                        <h4 id="addClientModalTitle">Добавить нового клиента</h4>
+                        <form id="addClientForm">
+                            <div>
+                                <label for="clientFullName">ФИО (опционально):</label>
+                                <input type="text" id="clientFullName" name="clientFullName" aria-label="ФИО клиента">
+                            </div>
+                            <div>
+                                <label for="clientPhone">Телефон (для входа, формат +7XXXXXXXXXX):</label>
+                                <input type="tel" id="clientPhone" name="clientPhone" placeholder="+79123456789" required aria-label="Номер телефона клиента (формат +7XXXXXXXXXX), будет использован для входа">
+                            </div>
+                             <div>
+                                <label for="clientPasswordAdmin">Пароль для клиента:</label>
+                                <input type="password" id="clientPasswordAdmin" name="clientPasswordAdmin" required aria-label="Пароль для нового клиента">
+                            </div>
+                            <div>
+                                <label for="clientIikoId">Client ID (iiko):</label>
+                                <input type="text" id="clientIikoId" name="clientIikoId" required aria-label="Client ID из системы iiko (используется для QR-кода)">
+                            </div>
+                            <button type="submit" class="primary-button">Сохранить клиента</button>
+                            <p id="addClientError" class="error-message" aria-live="assertive"></p>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="resetClientPasswordModal" class="modal" style="display:none;" aria-modal="true" role="dialog" aria-labelledby="resetClientPasswordModalTitle">
+                    <div class="modal-content">
+                        <span class="close-button" id="closeResetClientPasswordModalBtn" role="button" tabindex="0" aria-label="Закрыть">&times;</span>
+                        <h4 id="resetClientPasswordModalTitle">Сбросить пароль клиента</h4>
+                        <form id="resetClientPasswordForm">
+                            <input type="hidden" id="resetClientPasswordClientId" name="resetClientPasswordClientId">
+                            <div>
+                                <label for="resetClientPasswordNewInput">Новый пароль:</label>
+                                <input type="password" id="resetClientPasswordNewInput" name="resetClientPasswordNewInput" required aria-label="Новый пароль для клиента">
+                            </div>
+                            <div>
+                                <label for="resetClientPasswordConfirmInput">Подтвердите новый пароль:</label>
+                                <input type="password" id="resetClientPasswordConfirmInput" name="resetClientPasswordConfirmInput" required aria-label="Подтверждение нового пароля для клиента">
+                            </div>
+                            <button type="submit" class="primary-button">Сохранить новый пароль</button>
+                            <p id="resetClientPasswordError" class="error-message" aria-live="assertive"></p>
+                            <p id="resetClientPasswordSuccess" class="success-message" aria-live="assertive"></p>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <section id="clientQrView" class="view" style="display: none;">
+                <div id="clientQrContent">
+                    <h2 id="clientNameDisplay"></h2>
+                    <div id="qrCodeContainerClient" class="qr-code-container-client"></div>
+                    <p>Покажите сотруднику для применения скидки.</p>
+                    <p id="clientDefaultPasswordMessage" class="info-message" style="display:none;">Для безопасности, пожалуйста, смените ваш пароль в настройках.</p>
+                </div>
+
+                <div id="changeClientPasswordView" style="display: none;">
+                    <h4>Смена пароля клиента</h4>
+                    <form id="changeClientPasswordForm">
+                        <div>
+                            <label for="currentClientPassword">Текущий пароль:</label>
+                            <input type="password" id="currentClientPassword" name="currentClientPassword" required aria-label="Текущий пароль">
+                        </div>
+                        <div>
+                            <label for="newClientPassword">Новый пароль:</label>
+                            <input type="password" id="newClientPassword" name="newClientPassword" required aria-label="Новый пароль">
+                        </div>
+                        <div>
+                            <label for="confirmNewClientPassword">Подтвердите новый пароль:</label>
+                            <input type="password" id="confirmNewClientPassword" name="confirmNewClientPassword" required aria-label="Подтверждение нового пароля">
+                        </div>
+                        <button type="submit" class="primary-button">Сменить пароль</button>
+                        <p id="changeClientPasswordError" class="error-message" aria-live="assertive"></p>
+                        <p id="changeClientPasswordSuccess" class="success-message" aria-live="assertive"></p>
+                        <button type="button" id="backToClientQrViewBtn" class="secondary-button">Назад к QR</button>
+                    </form>
+                </div>
+                 <p id="clientAccessError" class="error-message" aria-live="assertive"></p> <!-- Kept for general errors -->
+            </section>
+
+            <section id="adminSettingsView" class="view" style="display: none;">
+                <h2>Настройки администратора</h2>
+                <form id="changeAdminCredentialsForm">
+                    <div>
+                        <label for="oldPassword">Старый пароль:</label>
+                        <input type="password" id="oldPassword" name="oldPassword" required aria-label="Старый пароль администратора">
+                    </div>
+                    <div>
+                        <label for="newPassword">Новый пароль (оставьте пустым, чтобы не менять):</label>
+                        <input type="password" id="newPassword" name="newPassword" aria-label="Новый пароль администратора">
+                    </div>
+                     <div>
+                        <label for="confirmNewPassword">Подтвердите новый пароль:</label>
+                        <input type="password" id="confirmNewPassword" name="confirmNewPassword" aria-label="Подтверждение нового пароля администратора">
+                    </div>
+                    <button type="submit" class="primary-button">Сохранить изменения</button>
+                    <p id="adminSettingsError" class="error-message" aria-live="assertive"></p>
+                    <p id="adminSettingsSuccess" class="success-message" aria-live="assertive"></p>
+                </form>
+            </section>
+        </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script type="module" src="index.js"></script>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
